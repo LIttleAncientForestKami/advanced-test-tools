@@ -1,0 +1,394 @@
+= Advanced testing tools
+:author: Tomasz Borek, @LAFK_pl
+:email: http://lafk.pl
+:toc: preamble
+:toc-title: Agenda
+:hardbreaks:
+:icons: font
+:imagesdir: ./img/
+:docinfo:
+:source-highlighter: highlightjs
+:backend: revealjs
+:revealjs_theme: white
+:revealjs_slideNumber: true
+
+Parametrised testing, system testing, NFR testing...
+
+== About me
+
+image::lafk_pl.png[]
+
+=== Today
+We cover
+
+=== !
+[IMPORTANT]
+.*Parametrised testing*
+====
+. TestNG `@DataProvider`
+. JUnit with Zohhak
+. JUnit with JUnit-Params
+. new JUnit, yet unreleased and alpha
+====
+
+=== !
+[CAUTION]
+.*DB tests*
+====
+. DBUnit
+. Data fakers / generators
+. LiquiBase
+====
+
+=== !
+[TIP]
+.*NFR and system tests*
+====
+. extensibility
+. configurability
+. modularity
+. usability
+. high availability
+. reliability
+====
+
+WARNING: *Shallow* - preso != workshop or training.
+
+
+=== Questions?
+
+image::question-mark.jpg[]
+
+Or tweet me @LAFK_pl
+
+[data-background="green"]
+== Parametrised tests
+
+. TestNG `@DataProvider`
+. JUnit 4.12
+. JUnit Zohhak
+. JUnitParams
+. JUnit Theories
+. Property tests
+
+[data-background="red"]
+=== TestNG
+
+[source,java]
+----
+    // Provides data to any test method declaring Data Provider named "nameAndAge"
+    @DataProvider(name = "nameAndAge")
+    public Object[][] nameIrrelevant() {
+        return new Object[][]{
+                {"Cedric", 36},
+                {"Anne", 37},
+                {"Tommy", 8},
+                {"Seoman", 18}, // who remembers Seoman Snowlock?
+                {"Miriamele", 19}  // hint perhaps?
+         };
+    }
+
+    @Test(dataProvider = "nameAndAge")
+    public void verifyData1(String name, Integer age) {
+        System.out.println(name + " " + age);
+    }
+
+    @Test(dataProvider = "nameAndAge")
+    public void verifyData1Again(String name, Integer age) {
+        Assert.assertNotNull(name, "Name null for " + name + age);
+        Assert.assertNotNull(age, "Age null for " + name + age);
+    }
+
+    @Test(dataProvider = "nameAndAge")
+    public void verifyData1LastTime(String name, Integer age) {
+        SoftAssert soft = new SoftAssert();
+        soft.assertTrue(age > 18, name + " not of age in Europe!");
+        soft.assertTrue(age > 21, name + " not of age in US!");
+        soft.assertAll();
+    }
+}
+----
+
+=== JUnit 4.11
+
+[source,java]
+----
+@RunWith(Parameterized.class)
+public class AppParameterizedTest {
+
+    @Rule
+    public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+
+    private String name;
+    private Integer age;
+
+    public AppParameterizedTest(String n, Integer a) {
+        this.name = n;
+        this.age = a;
+    }
+
+    @Parameterized.Parameters(name = "{index}: name: {0} age: {1}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"Cedric", 36},
+                {"Anne", 37},
+                {"Tommy", 8},
+                {"Seoman", 18}, // who remembers Seoman Snowlock?
+                {"Miriamele", 19}  // hint perhaps?
+        });
+    }
+
+    @org.junit.Test
+    public void verifyData1() {
+        System.out.println(name + " " + age);
+    }
+
+    @org.junit.Test
+    public void verifyData1Again() {
+        // reversed message - condition order
+        org.junit.Assert.assertNotNull("Name null for " + name + age, name);
+        org.junit.Assert.assertNotNull("Age null for " + name + age, age);
+    }
+
+    /**
+     * @see <A HREF="http://joel-costigliola.github.io/assertj/assertj-core-features-highlight.html#soft-assertions">AssertJ SoftAssertions 4 JUnit</A>
+     */
+    @org.junit.Test
+    public void verifyData1LastTime() {
+
+        softly.assertThat(age).as(name + " not of age in Europe! (JU+AJ)").isGreaterThan(18);
+        softly.assertThat(age).isGreaterThan(21).as(name + " not of age in US! (JU+AJ)");
+    }
+}
+----
+
+=== Zohhak
+[source,java]
+----
+----
+
+
+[data-background="red"]
+=== JUnitParams
+
+[source,java]
+----
+@RunWith(JUnitParamsRunner.class)
+public class AppJUnitParamsTest {
+
+    @Test
+    @junitparams.Parameters({
+            "36, Cedric",
+            "37, Anne",
+            "8, Tommy",
+            "18, Seoman",
+            "19, Miriamele" })
+    public void personIsAdult(int age, String name) {
+        org.assertj.core.api.Assertions.assertThat(age).isGreaterThanOrEqualTo(18).as("adult in EU");
+        org.assertj.core.api.Assertions.assertThat(age).isGreaterThanOrEqualTo(21).as("adult in US");
+    }
+}
+----
+
+=== JUnit Theories 
+Aka Poppler project.
+[source,java]
+----
+@RunWith(Theories.class)
+public class AppTheory {
+
+    @DataPoints
+    public static Person[] personProvider() {
+        return new Person[] {
+                new Person("Cedric", 36),
+                new Person("Anne", 37),
+                new Person("Tommy", 8),
+                new Person("Seoman", 18), // who remembers Seoman Snowlock?
+                new Person("Miriamele", 19),  // hint perhaps?
+                new Person(null, 22)
+        };
+    }
+
+    /**
+     * In THEORY, name is 'of age' after 'name' reaches 18. Assuming 'name' shan't be null,
+     *
+     * THEORY however is wrong if one case disproving it is found, so... SoftAssertions again!
+     */
+    @Theory(nullsAccepted = true)
+    public void ofAge(Person p) {
+        Assume.assumeNotNull(p.name);
+        Assume.assumeNotNull(p.age);
+        org.assertj.core.api.Assertions.assertThat(p.age).as(p.name + "? Not in Europe").isGreaterThan(18);
+        org.assertj.core.api.Assertions.assertThat(p.age).isGreaterThan(21).as(p.name + "? Not in US");
+    }
+}
+----
+
+=== Summary?
+
+|===
+Name | Soft Assertions | Params | Reporting
+|
+TestNG | + | `@DataProvider`, XML | +
+|
+JUnit | `@Rule ErrorCollector`, `@Rule JUnitSoftAssertions` | since (4.11) |
+|===
+
+JUnit Theory 
+Zohhak
+JUnitParams
+
+
+=== JUnit 5
+
+
+[data-background="green"]
+== First NF requirements
+
+EXTENSIBILITY :: ability to extend and modify software quickly and easily
+
+CONFIGURABILITY :: ability to tune software to your needs, switch configs on the fly, dynamically update it without restart...
+
+MODULARITY :: organising software into modules, for reuse, understanding and cohesion
+
+How can we make sure these are met? 
+
+=== NFR tests here are...
+
+System tests.
+
+[TIP]
+.Examples
+====
+. REST paths follow conventions
+. `@Ignore` is NOT abused
+. only `@Mappers` from package `my.mappers` count
+====
+
+=== Tools?
+
+. http://stackoverflow.com/questions/259140/scanning-java-annotations-at-runtime[Scannotations, Reflections and more than 10 others]
+
+[WARNING]
+.Classpath scanning
+====
+[source, java]
+----
+((UrlClassLoader) classloader).getURLs();
+----
+. at least once to build DB of all annotated classes
+. WARs, JARs anyone?
+. how LARGE is your classpath exactly?
+. you can use this in your system tests
+====
+
+=== ClassIndex
+
+https://github.com/atteo/classindex
+
+=== !
+image::WhyClassIndex.png[]
+
+
+[data-background="green"]
+== Usability
+
+USABILITY :: how well we can use the software, how much "usable" is it. UX, UI, intuitiveness and composition of the interface...
+
+And here?
+
+=== Usability tests are end to end tests
+
+1. Scenarios (how hard it would be to add "undo" feature to a given screen?
+2. End-to-end tests
+
+=== Tools
+
+Gauge, by ThoughtWorks
+
+[data-background="green"]
+== Performant software?
+
+HIGH AVAILABILITY :: software - despite whatever - remains able to work
+
+RELIABILITY :: software performs the service without problems
+
+=== Tests for performant software?
+
+LOAD tests :: can we shoulder load we are anticipating, up till our ceiling?
+
+SOAK tests :: how much abuse can we take once we PASS the ceiling?
+
+ENDURANCE tests :: for how long can we run within our anticipated range?
+
+=== Tools?
+
+. stress 
+. Gatling
+
+=== Stress
+
+[source, bash]
+----
+$ sudo apt-get install stress
+$ man stress
+$ htop
+$ stress --cpu 4 --io 3 --hdd 3 --vm 2 --vm-bytes 128M
+----
+
+=== Gatling
+
+== Extra
+
+Alias "everything else" :-)
+
+=== WireMock
+
+WS test double
+
+
+=== Awaitability
+
+Asynchronouse tests?
+
+
+=== Bibliography / Links 
+
+http://www.lafk.pl/
+
+for further reading
+
+https://github.com/LIttleAncientForestKami/advanced-testing-Java-preso
+https://github.com/junit-team/junit5
+http://junit.org/junit5/#method-parameters-and-dependency-injection
+http://www.liquibase.org/bestpractices.html
+
+=== WireMock by Tom Akenhurst
+
+http://wiremock.org/java-usage.html - web-service test double
+
+=== Fault injection
+
+https://developer.jboss.org/wiki/FaultInjectionTestingWithByteman
+https://dzone.com/articles/fault-injection-testing-first
+https://theholyjava.wordpress.com/2012/02/25/cool-tools-fault-injection-into-unit-tests-with-jboss-byteman-easier-testing-of-error-handling/
+
+https://kar.kent.ac.uk/42313/1/FMCO2.pdf
+
+wrk - w C, piszesz skrypty w Lua
+
+=== Tools
+. JUnit
+. Zohhak
+. JUnitParams
+. DBUnit
+. DataBene Benerator
+. JFairy
+. LiquiBase
+. Spring Data
+
+. stress
+. Gatling
+. JUnit QuickCheck
+. BUnit
+

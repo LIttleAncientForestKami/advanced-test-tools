@@ -1,0 +1,1 @@
+/home/tammo/RDZ/szkoleniowe/reveal.js
