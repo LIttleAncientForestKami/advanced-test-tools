@@ -28,16 +28,6 @@ We cover
 . TestNG `@DataProvider`
 . JUnit with Zohhak
 . JUnit with JUnit-Params
-. new JUnit, yet unreleased and alpha
-====
-
-=== !
-[CAUTION]
-.*DB tests*
-====
-. DBUnit
-. Data fakers / generators
-. LiquiBase
 ====
 
 === !
@@ -51,6 +41,16 @@ We cover
 . high availability
 . reliability
 ====
+
+=== !
+[CAUTION]
+.new JUnit, yet unreleased and alpha
+====
+. Migration from 4
+. new concepts
+====
+
+and many others
 
 WARNING: *Shallow* - preso != workshop or training.
 
@@ -265,19 +265,21 @@ public class AppTheory {
 }
 ----
 
+=== Soft Assertions?
+
+. TestNG has them built-in, simply, as LinkedHashMap.
+. JUnit has 
+.. `ErrorCollector` rule 
+.. `JUnitSoftAssertions` rule 
+.. but rules may cause troubles (ordering)
+. 
+
 === Summary?
 
-|===
-Name | Soft Assertions | Params | Reporting
-|
-TestNG | + | `@DataProvider`, XML | +
-|
-JUnit | `@Rule ErrorCollector`, `@Rule JUnitSoftAssertions` | since (4.11) |
-|===
-
-JUnit Theory 
-Zohhak
-JUnitParams
+. TestNG: `@DataProvider`, XML, good error reporting and grouping.
+. JUnit: constructor, static methods, strange reporting (until 4.7)
+. Remedied with Zohhak or JUnitParams (params via annotation)
+. JUnit Theory: strict, mathematical - seen property testing?
 
 [data-background="green"]
 == JUnit 5
@@ -287,9 +289,8 @@ JUnitParams
 . Straighten up concepts, shaked out `@Rule` or `@RunWith`
 . No IDE support now, only Console runner, Maven or Gradle
 
-http://junit.org/junit5/
-https://junit.ci.cloudbees.com/job/JUnit5/javadoc/
-
+http://junit.org/junit5/ (user guide, Javadocs, forums)
+http://www.codeaffine.com/2016/02/18/junit-5-first-look/
 
 === JUnit 5 from Maven
 
@@ -535,10 +536,20 @@ https://github.com/gatling/gatling
 
 Alias "everything else" :-)
 
-=== WireMock
+=== DataBene Benerator
 
-WS test double
+image::databeneBeneratorUsage.png[]
 
+=== Infinitest
+
+image::Infinitest-logo.png[]
+http://infinitest.github.io/
+
+=== WireMock by Tom Akenhurst
+
+http://wiremock.org/java-usage.html - web-service test double
+
+image::WireMock_SystemUnderTest-780x378.png[]
 
 === Awaitability
 
@@ -546,43 +557,6 @@ Asynchronous tests?
 
 image::Awaitility_logo_red_small.png[]
 
-=== Bibliography / Links 
-
-http://www.lafk.pl/
-
-for further reading
-
-https://github.com/LIttleAncientForestKami/advanced-testing-Java-preso
-https://github.com/junit-team/junit5
-http://junit.org/junit5/#method-parameters-and-dependency-injection
-http://www.liquibase.org/bestpractices.html
-
-=== WireMock by Tom Akenhurst
-
-http://wiremock.org/java-usage.html - web-service test double
-
-=== Fault injection
-
-https://developer.jboss.org/wiki/FaultInjectionTestingWithByteman
-https://dzone.com/articles/fault-injection-testing-first
-https://theholyjava.wordpress.com/2012/02/25/cool-tools-fault-injection-into-unit-tests-with-jboss-byteman-easier-testing-of-error-handling/
-
-https://kar.kent.ac.uk/42313/1/FMCO2.pdf
-
-wrk - w C, piszesz skrypty w Lua
-
 === Tools
-. JUnit
-. Zohhak
-. JUnitParams
-. DBUnit
-. DataBene Benerator
-. JFairy
-. LiquiBase
-. Spring Data
 
-. stress
-. Gatling
-. JUnit QuickCheck
-. BUnit
-
+image::LogosAssembled.png[]
