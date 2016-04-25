@@ -47,7 +47,7 @@ We cover
 . extensibility
 . configurability
 . modularity
-. usability
+. usability (just mention though)
 . high availability
 . reliability
 ====
@@ -59,7 +59,7 @@ WARNING: *Shallow* - preso != workshop or training.
 
 image::question-mark.jpg[]
 
-Or tweet me @LAFK_pl
+Or tweet me http://twitter.com/LAFK_pl[@LAFK_pl]
 
 [data-background="green"]
 == Parametrised tests
@@ -162,9 +162,50 @@ public class AppParameterizedTest {
 }
 ----
 
+=== JUnit - brief history
+
+. 4.7 brought `@Rule ErrorCollector`
+. 4.11 brought description for `@Parameterized`
+. 4.12 brought other types for `@Parameterized` (`Object[]` and `Iterable`)
+. 5.0 deals away with rules and runners...
+
+
 === Zohhak
+
+. Simplifies parametrised testing for JUnit
+. http://piotrturski.github.io/zohhak/
+. https://github.com/piotrturski/zohhak/blob/master/Quick-Start.md[3 minute quick start]
+. https://github.com/piotrturski/zohhak/blob/master/Full-Guide.md[Full guide]
+
+=== !
+
+image::Zohhak.png[]
+
+=== Zohhak test
 [source,java]
 ----
+import com.googlecode.zohhak.api.TestWith;
+import com.googlecode.zohhak.api.runners.ZohhakRunner;
+import org.junit.runner.RunWith;
+
+/**
+ * @author LAFK_pl, Tomasz.Borek@gmail.com
+ */
+@RunWith(ZohhakRunner.class)
+public class AppZohhakTest {
+
+    @TestWith({
+            "36, Cedric",
+            "37, Anne",
+            "8, Tommy",
+            "18, Seoman",
+            "19, Miriamele" })
+    public void personIsAdult(int age, String name) {
+        org.assertj.core.api.Assertions.assertThat(age).isGreaterThanOrEqualTo(18).as("adult in EU");
+        org.assertj.core.api.Assertions.assertThat(age).isGreaterThanOrEqualTo(21).as("adult in US");
+    }
+
+}
 ----
 
 
@@ -238,9 +279,157 @@ JUnit Theory
 Zohhak
 JUnitParams
 
+[data-background="green"]
+== JUnit 5
 
-=== JUnit 5
+. From JUnit Lambda crowdfunding
+. Can run JUnit 4 tests or new ones (2 engines)
+. Straighten up concepts, shaked out `@Rule` or `@RunWith`
+. No IDE support now, only Console runner, Maven or Gradle
 
+http://junit.org/junit5/
+https://junit.ci.cloudbees.com/job/JUnit5/javadoc/
+
+
+=== JUnit 5 from Maven
+
+[source,bash]
+----
+$ ➜  git clone https://github.com/junit-team/junit5-samples.git
+$ ➜  cd junit5-maven-consumer
+$ ➜  mvn test
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.example.project.SecondTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.055 sec - in com.example.project.SecondTest
+Running com.example.project.FirstTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.01 sec - in com.example.project.FirstTest
+Running com.example.project.JUnit4Test
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 sec - in com.example.project.JUnit4Test
+
+Results :
+
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 1
+
+$ ➜  junit5-maven-consumer git:(master) tree src 
+src
+└── test
+    └── java
+        └── com
+            └── example
+                └── project
+                    ├── FirstTest.java
+                    ├── JUnit4Test.java
+                    └── SecondTest.java
+
+$ ➜  junit5-maven-consumer git:(master) vim pom.xml
+----
+
+=== FirstTest.java
+
+[source,java]
+----
+import static org.junit.gen5.api.Assertions.assertEquals;
+
+import org.junit.gen5.api.DisplayName;
+import org.junit.gen5.api.Test;
+import org.junit.gen5.api.TestInfo;
+
+class FirstTest {
+
+    @Test
+    @DisplayName("My 1st JUnit 5 test! 😎")
+    void myFirstTest(TestInfo testInfo) {
+        assertEquals(2, 1 + 1, "1 + 1 should equal 2");
+        assertEquals("My 1st JUnit 5 test! 😎", testInfo.getDisplayName(), () -> "TestInfo is injected correctly");
+    }
+
+}
+----
+
+=== SecondTest.java
+[source.java]
+----
+import static org.junit.gen5.api.Assertions.assertEquals;
+
+import org.junit.gen5.api.Disabled;
+import org.junit.gen5.api.Test;
+
+class SecondTest {
+
+    @Test
+    @Disabled
+    void mySecondTest() {
+        assertEquals(2, 1, "2 is not equal to 1");
+    }
+
+}
+----
+
+=== JUnit4Test.java
+[source,java]
+----
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class JUnit4Test {
+
+    @Test
+    public void test() {
+        assertEquals(3, 1 + 2);
+    }
+}
+----
+
+=== Third - our - test
+
+[source,java]
+----
+import static org.junit.gen5.api.Assertions.assertEquals;
+import static org.junit.gen5.api.Assertions.assertAll;
+
+import org.junit.gen5.api.DisplayName;
+import org.junit.gen5.api.Test;
+import org.junit.gen5.api.TestInfo;
+
+class ThirdTest {
+
+	@Test
+	@DisplayName("Experimental parametrized test!")
+	void myFirstParameterizedTest(TestInfo testInfo) {
+        assertAll("display name",
+            () -> assertEquals(2, 1 + 1, "1 + 1 should equal 2"),
+            () -> assertEquals("Experimental parametrized test", testInfo.getDisplayName(), () -> "TestInfo is injected correctly")
+        );
+	}
+
+}
+----
+
+=== Running it?
+via `mvn test`:
+----
+Running com.example.project.ThirdTest
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec <<< FAILURE! - in com.example.project.ThirdTest
+Experimental parametrized test!  Time elapsed: 0.001 sec  <<< FAILURE!
+org.opentest4j.MultipleFailuresError: 
+display name (1 failure)
+    TestInfo is injected correctly ==> expected: <Experimental parametrized test> but was: <Experimental parametrized test!>
+    at com.example.project.ThirdTest.myFirstParameterizedTest(ThirdTest.java:16)
+
+Running com.example.project.JUnit4Test
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 sec - in com.example.project.JUnit4Test
+
+Results :
+
+Failed tests: 
+  ThirdTest.myFirstParameterizedTest:16 display name (1 failure)
+    TestInfo is injected correctly ==> expected: <Experimental parametrized test> but was: <Experimental parametrized test!>
+
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 1
+----
 
 [data-background="green"]
 == First NF requirements
@@ -279,7 +468,7 @@ System tests.
 . at least once to build DB of all annotated classes
 . WARs, JARs anyone?
 . how LARGE is your classpath exactly?
-. you can use this in your system tests
+. https://bill.burkecentral.com/2008/01/14/scanning-java-annotations-at-runtime/[details how you may do it]
 ====
 
 === ClassIndex
@@ -305,6 +494,8 @@ And here?
 === Tools
 
 Gauge, by ThoughtWorks
+https://github.com/getgauge/gauge-example-java
+http://getgauge.io/get-started/index.html
 
 [data-background="green"]
 == Performant software?
@@ -338,6 +529,8 @@ $ stress --cpu 4 --io 3 --hdd 3 --vm 2 --vm-bytes 128M
 
 === Gatling
 
+https://github.com/gatling/gatling
+
 == Extra
 
 Alias "everything else" :-)
@@ -349,8 +542,9 @@ WS test double
 
 === Awaitability
 
-Asynchronouse tests?
+Asynchronous tests?
 
+image::Awaitility_logo_red_small.png[]
 
 === Bibliography / Links 
 

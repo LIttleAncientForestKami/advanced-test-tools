@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="author" content="Tomasz Borek, @LAFK pl"><title>Advanced testing tools</title><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" name="viewport"><link href="reveal.js/css/reveal.css" rel="stylesheet"><link rel="stylesheet" href="reveal.js/css/theme/white.css" id="theme"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css"><link href="reveal.js/lib/css/zenburn.css" rel="stylesheet"><script type="text/javascript">document.write( '<link rel="stylesheet" href="reveal.js/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );</script><link rel="icon" type="image/ico" href="img/favicon.ico"/>
 <link rel="stylesheet" href="myStandard4Adocs.css"></head><body><div class="reveal"><div class="slides"><section><h1>Advanced testing tools</h1><div class="paragraph"><p>Parametrised testing, system testing, NFR testing&#8230;&#8203;</p></div><p><small>Tomasz Borek, @LAFK pl</small></p></section>
-<section><section id="_about_me"><h2>About me</h2><div class="imageblock" style=""><div class="content"><img src="./img//lafk_pl.png" alt="lafk pl"></div></div></section><section id="_today"><h2>Today</h2><div class="paragraph"><p>We cover</p></div></section><section><div class="admonitionblock important"><table><tr><td class="icon"><i class="fa fa-exclamation-circle" title="Important"></i></td><td class="content"><div class="title"><strong>Parametrised testing</strong></div><div class="olist arabic"><ol class="arabic"><li><p>TestNG <code>@DataProvider</code></p></li><li><p>JUnit with Zohhak</p></li><li><p>JUnit with JUnit-Params</p></li><li><p>new JUnit, yet unreleased and alpha</p></li></ol></div></td></tr></table></div></section><section><div class="admonitionblock caution"><table><tr><td class="icon"><i class="fa fa-fire" title="Caution"></i></td><td class="content"><div class="title"><strong>DB tests</strong></div><div class="olist arabic"><ol class="arabic"><li><p>DBUnit</p></li><li><p>Data fakers / generators</p></li><li><p>LiquiBase</p></li></ol></div></td></tr></table></div></section><section><div class="admonitionblock tip"><table><tr><td class="icon"><i class="fa fa-lightbulb-o" title="Tip"></i></td><td class="content"><div class="title"><strong>NFR and system tests</strong></div><div class="olist arabic"><ol class="arabic"><li><p>extensibility</p></li><li><p>configurability</p></li><li><p>modularity</p></li><li><p>usability</p></li><li><p>high availability</p></li><li><p>reliability</p></li></ol></div></td></tr></table></div>
+<section><section id="_about_me"><h2>About me</h2><div class="imageblock" style=""><div class="content"><img src="./img//lafk_pl.png" alt="lafk pl"></div></div></section><section id="_today"><h2>Today</h2><div class="paragraph"><p>We cover</p></div></section><section><div class="admonitionblock important"><table><tr><td class="icon"><i class="fa fa-exclamation-circle" title="Important"></i></td><td class="content"><div class="title"><strong>Parametrised testing</strong></div><div class="olist arabic"><ol class="arabic"><li><p>TestNG <code>@DataProvider</code></p></li><li><p>JUnit with Zohhak</p></li><li><p>JUnit with JUnit-Params</p></li><li><p>new JUnit, yet unreleased and alpha</p></li></ol></div></td></tr></table></div></section><section><div class="admonitionblock caution"><table><tr><td class="icon"><i class="fa fa-fire" title="Caution"></i></td><td class="content"><div class="title"><strong>DB tests</strong></div><div class="olist arabic"><ol class="arabic"><li><p>DBUnit</p></li><li><p>Data fakers / generators</p></li><li><p>LiquiBase</p></li></ol></div></td></tr></table></div></section><section><div class="admonitionblock tip"><table><tr><td class="icon"><i class="fa fa-lightbulb-o" title="Tip"></i></td><td class="content"><div class="title"><strong>NFR and system tests</strong></div><div class="olist arabic"><ol class="arabic"><li><p>extensibility</p></li><li><p>configurability</p></li><li><p>modularity</p></li><li><p>usability (just mention though)</p></li><li><p>high availability</p></li><li><p>reliability</p></li></ol></div></td></tr></table></div>
 <div class="admonitionblock warning"><table><tr><td class="icon"><i class="fa fa-warning" title="Warning"></i></td><td class="content"><strong>Shallow</strong> - preso != workshop or training.</td></tr></table></div></section><section id="_questions"><h2>Questions?</h2><div class="imageblock" style=""><div class="content"><img src="./img//question-mark.jpg" alt="question mark"></div></div>
-<div class="paragraph"><p>Or tweet me @LAFK_pl</p></div></section></section>
+<div class="paragraph"><p>Or tweet me <a href="http://twitter.com/LAFK_pl">@LAFK_pl</a></p></div></section></section>
 <section><section id="_parametrised_tests" data-background="green"><h2>Parametrised tests</h2><div class="olist arabic"><ol class="arabic"><li><p>TestNG <code>@DataProvider</code></p></li><li><p>JUnit 4.12</p></li><li><p>JUnit Zohhak</p></li><li><p>JUnitParams</p></li><li><p>JUnit Theories</p></li><li><p>Property tests</p></li></ol></div></section><section id="_testng" data-background="red"><h2>TestNG</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">    // Provides data to any test method declaring Data Provider named "nameAndAge"
     @DataProvider(name = "nameAndAge")
     public Object[][] nameIrrelevant() {
@@ -79,7 +79,28 @@ public class AppParameterizedTest {
         softly.assertThat(age).as(name + " not of age in Europe! (JU+AJ)").isGreaterThan(18);
         softly.assertThat(age).isGreaterThan(21).as(name + " not of age in US! (JU+AJ)");
     }
-}</code></pre></div></div></section><section id="_zohhak"><h2>Zohhak</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java"></code></pre></div></div></section><section id="_junitparams" data-background="red"><h2>JUnitParams</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">@RunWith(JUnitParamsRunner.class)
+}</code></pre></div></div></section><section id="_junit_brief_history"><h2>JUnit - brief history</h2><div class="olist arabic"><ol class="arabic"><li><p>4.7 brought <code>@Rule ErrorCollector</code></p></li><li><p>4.11 brought description for <code>@Parameterized</code></p></li><li><p>4.12 brought other types for <code>@Parameterized</code> (<code>Object[]</code> and <code>Iterable</code>)</p></li><li><p>5.0 deals away with rules and runners&#8230;&#8203;</p></li></ol></div></section><section id="_zohhak"><h2>Zohhak</h2><div class="olist arabic"><ol class="arabic"><li><p>Simplifies parametrised testing for JUnit</p></li><li><p><a href="http://piotrturski.github.io/zohhak/" class="bare">http://piotrturski.github.io/zohhak/</a></p></li><li><p><a href="https://github.com/piotrturski/zohhak/blob/master/Quick-Start.md">3 minute quick start</a></p></li><li><p><a href="https://github.com/piotrturski/zohhak/blob/master/Full-Guide.md">Full guide</a></p></li></ol></div></section><section><div class="imageblock" style=""><div class="content"><img src="./img//Zohhak.png" alt="Zohhak"></div></div></section><section id="_zohhak_test"><h2>Zohhak test</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">import com.googlecode.zohhak.api.TestWith;
+import com.googlecode.zohhak.api.runners.ZohhakRunner;
+import org.junit.runner.RunWith;
+
+/**
+ * @author LAFK_pl, Tomasz.Borek@gmail.com
+ */
+@RunWith(ZohhakRunner.class)
+public class AppZohhakTest {
+
+    @TestWith({
+            "36, Cedric",
+            "37, Anne",
+            "8, Tommy",
+            "18, Seoman",
+            "19, Miriamele" })
+    public void personIsAdult(int age, String name) {
+        org.assertj.core.api.Assertions.assertThat(age).isGreaterThanOrEqualTo(18).as("adult in EU");
+        org.assertj.core.api.Assertions.assertThat(age).isGreaterThanOrEqualTo(21).as("adult in US");
+    }
+
+}</code></pre></div></div></section><section id="_junitparams" data-background="red"><h2>JUnitParams</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">@RunWith(JUnitParamsRunner.class)
 public class AppJUnitParamsTest {
 
     @Test
@@ -124,17 +145,124 @@ public class AppTheory {
 }</code></pre></div></div></section><section id="_summary"><h2>Summary?</h2><table class="tableblock frame-all grid-all" style="width:100%"><colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup><tbody><tr><td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">Soft Assertions</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">Params</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">Reporting</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class="tableblock">TestNG</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">+</p></td><td class="tableblock halign-left valign-top"><p class="tableblock"><code>@DataProvider</code>, XML</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">+</p></td></tr><tr><td class="tableblock halign-left valign-top"><p class="tableblock">JUnit</p></td><td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Rule ErrorCollector</code>, <code>@Rule JUnitSoftAssertions</code></p></td><td class="tableblock halign-left valign-top"><p class="tableblock">since (4.11)</p></td><td class="tableblock halign-left valign-top"></td></tr></tbody></table>
 <div class="paragraph"><p>JUnit Theory<br>
 Zohhak<br>
-JUnitParams</p></div></section><section id="_junit_5"><h2>JUnit 5</h2></section></section>
+JUnitParams</p></div></section></section>
+<section><section id="_junit_5" data-background="green"><h2>JUnit 5</h2><div class="olist arabic"><ol class="arabic"><li><p>From JUnit Lambda crowdfunding</p></li><li><p>Can run JUnit 4 tests or new ones (2 engines)</p></li><li><p>Straighten up concepts, shaked out <code>@Rule</code> or <code>@RunWith</code></p></li><li><p>No IDE support now, only Console runner, Maven or Gradle</p></li></ol></div><div class="paragraph"><p><a href="http://junit.org/junit5/" class="bare">http://junit.org/junit5/</a><br>
+<a href="https://junit.ci.cloudbees.com/job/JUnit5/javadoc/" class="bare">https://junit.ci.cloudbees.com/job/JUnit5/javadoc/</a></p></div></section><section id="_junit_5_from_maven"><h2>JUnit 5 from Maven</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="bash language-bash">$ ➜  git clone https://github.com/junit-team/junit5-samples.git
+$ ➜  cd junit5-maven-consumer
+$ ➜  mvn test
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.example.project.SecondTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.055 sec - in com.example.project.SecondTest
+Running com.example.project.FirstTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.01 sec - in com.example.project.FirstTest
+Running com.example.project.JUnit4Test
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 sec - in com.example.project.JUnit4Test
+
+Results :
+
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 1
+
+$ ➜  junit5-maven-consumer git:(master) tree src
+src
+└── test
+    └── java
+        └── com
+            └── example
+                └── project
+                    ├── FirstTest.java
+                    ├── JUnit4Test.java
+                    └── SecondTest.java
+
+$ ➜  junit5-maven-consumer git:(master) vim pom.xml</code></pre></div></div></section><section id="_firsttest_java"><h2>FirstTest.java</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">import static org.junit.gen5.api.Assertions.assertEquals;
+
+import org.junit.gen5.api.DisplayName;
+import org.junit.gen5.api.Test;
+import org.junit.gen5.api.TestInfo;
+
+class FirstTest {
+
+    @Test
+    @DisplayName("My 1st JUnit 5 test! 😎")
+    void myFirstTest(TestInfo testInfo) {
+        assertEquals(2, 1 + 1, "1 + 1 should equal 2");
+        assertEquals("My 1st JUnit 5 test! 😎", testInfo.getDisplayName(), () -&gt; "TestInfo is injected correctly");
+    }
+
+}</code></pre></div></div></section><section id="_secondtest_java"><h2>SecondTest.java</h2><div class="listingblock java"><div class="content"><pre class="highlight"><code>import static org.junit.gen5.api.Assertions.assertEquals;
+
+import org.junit.gen5.api.Disabled;
+import org.junit.gen5.api.Test;
+
+class SecondTest {
+
+    @Test
+    @Disabled
+    void mySecondTest() {
+        assertEquals(2, 1, "2 is not equal to 1");
+    }
+
+}</code></pre></div></div></section><section id="_junit4test_java"><h2>JUnit4Test.java</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class JUnit4Test {
+
+    @Test
+    public void test() {
+        assertEquals(3, 1 + 2);
+    }
+}</code></pre></div></div></section><section id="_third_our_test"><h2>Third - our - test</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">import static org.junit.gen5.api.Assertions.assertEquals;
+import static org.junit.gen5.api.Assertions.assertAll;
+
+import org.junit.gen5.api.DisplayName;
+import org.junit.gen5.api.Test;
+import org.junit.gen5.api.TestInfo;
+
+class ThirdTest {
+
+	@Test
+	@DisplayName("Experimental parametrized test!")
+	void myFirstParameterizedTest(TestInfo testInfo) {
+        assertAll("display name",
+            () -&gt; assertEquals(2, 1 + 1, "1 + 1 should equal 2"),
+            () -&gt; assertEquals("Experimental parametrized test", testInfo.getDisplayName(), () -&gt; "TestInfo is injected correctly")
+        );
+	}
+
+}</code></pre></div></div></section><section id="_running_it"><h2>Running it?</h2><div class="paragraph"><p>via <code>mvn test</code>:</p></div>
+<div class="listingblock"><div class="content"><pre class="highlight"><code>Running com.example.project.ThirdTest
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec &lt;&lt;&lt; FAILURE! - in com.example.project.ThirdTest
+Experimental parametrized test!  Time elapsed: 0.001 sec  &lt;&lt;&lt; FAILURE!
+org.opentest4j.MultipleFailuresError:
+display name (1 failure)
+    TestInfo is injected correctly ==&gt; expected: &lt;Experimental parametrized test&gt; but was: &lt;Experimental parametrized test!&gt;
+    at com.example.project.ThirdTest.myFirstParameterizedTest(ThirdTest.java:16)
+
+Running com.example.project.JUnit4Test
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 sec - in com.example.project.JUnit4Test
+
+Results :
+
+Failed tests:
+  ThirdTest.myFirstParameterizedTest:16 display name (1 failure)
+    TestInfo is injected correctly ==&gt; expected: &lt;Experimental parametrized test&gt; but was: &lt;Experimental parametrized test!&gt;
+
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 1</code></pre></div></div></section></section>
 <section><section id="_first_nf_requirements" data-background="green"><h2>First NF requirements</h2><div class="dlist"><dl><dt class="hdlist1">EXTENSIBILITY </dt><dd><p>ability to extend and modify software quickly and easily</p></dd><dt class="hdlist1">CONFIGURABILITY </dt><dd><p>ability to tune software to your needs, switch configs on the fly, dynamically update it without restart&#8230;&#8203;</p></dd><dt class="hdlist1">MODULARITY </dt><dd><p>organising software into modules, for reuse, understanding and cohesion</p></dd></dl></div><div class="paragraph"><p>How can we make sure these are met?</p></div></section><section id="_nfr_tests_here_are"><h2>NFR tests here are&#8230;&#8203;</h2><div class="paragraph"><p>System tests.</p></div>
 <div class="admonitionblock tip"><table><tr><td class="icon"><i class="fa fa-lightbulb-o" title="Tip"></i></td><td class="content"><div class="title">Examples</div><div class="olist arabic"><ol class="arabic"><li><p>REST paths follow conventions</p></li><li><p><code>@Ignore</code> is NOT abused</p></li><li><p>only <code>@Mappers</code> from package <code>my.mappers</code> count</p></li></ol></div></td></tr></table></div></section><section id="_tools"><h2>Tools?</h2><div class="olist arabic"><ol class="arabic"><li><p><a href="http://stackoverflow.com/questions/259140/scanning-java-annotations-at-runtime">Scannotations, Reflections and more than 10 others</a></p></li></ol></div>
 <div class="admonitionblock warning"><table><tr><td class="icon"><i class="fa fa-warning" title="Warning"></i></td><td class="content"><div class="title">Classpath scanning</div><div class="listingblock"><div class="content"><pre class="highlight"><code class="java language-java">((UrlClassLoader) classloader).getURLs();</code></pre></div></div>
-<div class="olist arabic"><ol class="arabic"><li><p>at least once to build DB of all annotated classes</p></li><li><p>WARs, JARs anyone?</p></li><li><p>how LARGE is your classpath exactly?</p></li><li><p>you can use this in your system tests</p></li></ol></div></td></tr></table></div></section><section id="_classindex"><h2>ClassIndex</h2><div class="paragraph"><p><a href="https://github.com/atteo/classindex" class="bare">https://github.com/atteo/classindex</a></p></div></section><section><div class="imageblock" style=""><div class="content"><img src="./img//WhyClassIndex.png" alt="WhyClassIndex"></div></div></section></section>
-<section><section id="_usability" data-background="green"><h2>Usability</h2><div class="dlist"><dl><dt class="hdlist1">USABILITY </dt><dd><p>how well we can use the software, how much "usable" is it. UX, UI, intuitiveness and composition of the interface&#8230;&#8203;</p></dd></dl></div><div class="paragraph"><p>And here?</p></div></section><section id="_usability_tests_are_end_to_end_tests"><h2>Usability tests are end to end tests</h2><div class="olist arabic"><ol class="arabic"><li><p>Scenarios (how hard it would be to add "undo" feature to a given screen?</p></li><li><p>End-to-end tests</p></li></ol></div></section><section id="_tools_2"><h2>Tools</h2><div class="paragraph"><p>Gauge, by ThoughtWorks</p></div></section></section>
+<div class="olist arabic"><ol class="arabic"><li><p>at least once to build DB of all annotated classes</p></li><li><p>WARs, JARs anyone?</p></li><li><p>how LARGE is your classpath exactly?</p></li><li><p><a href="https://bill.burkecentral.com/2008/01/14/scanning-java-annotations-at-runtime/">details how you may do it</a></p></li></ol></div></td></tr></table></div></section><section id="_classindex"><h2>ClassIndex</h2><div class="paragraph"><p><a href="https://github.com/atteo/classindex" class="bare">https://github.com/atteo/classindex</a></p></div></section><section><div class="imageblock" style=""><div class="content"><img src="./img//WhyClassIndex.png" alt="WhyClassIndex"></div></div></section></section>
+<section><section id="_usability" data-background="green"><h2>Usability</h2><div class="dlist"><dl><dt class="hdlist1">USABILITY </dt><dd><p>how well we can use the software, how much "usable" is it. UX, UI, intuitiveness and composition of the interface&#8230;&#8203;</p></dd></dl></div><div class="paragraph"><p>And here?</p></div></section><section id="_usability_tests_are_end_to_end_tests"><h2>Usability tests are end to end tests</h2><div class="olist arabic"><ol class="arabic"><li><p>Scenarios (how hard it would be to add "undo" feature to a given screen?</p></li><li><p>End-to-end tests</p></li></ol></div></section><section id="_tools_2"><h2>Tools</h2><div class="paragraph"><p>Gauge, by ThoughtWorks<br>
+<a href="https://github.com/getgauge/gauge-example-java" class="bare">https://github.com/getgauge/gauge-example-java</a><br>
+<a href="http://getgauge.io/get-started/index.html" class="bare">http://getgauge.io/get-started/index.html</a></p></div></section></section>
 <section><section id="_performant_software" data-background="green"><h2>Performant software?</h2><div class="dlist"><dl><dt class="hdlist1">HIGH AVAILABILITY </dt><dd><p>software - despite whatever - remains able to work</p></dd><dt class="hdlist1">RELIABILITY </dt><dd><p>software performs the service without problems</p></dd></dl></div></section><section id="_tests_for_performant_software"><h2>Tests for performant software?</h2><div class="dlist"><dl><dt class="hdlist1">LOAD tests </dt><dd><p>can we shoulder load we are anticipating, up till our ceiling?</p></dd><dt class="hdlist1">SOAK tests </dt><dd><p>how much abuse can we take once we PASS the ceiling?</p></dd><dt class="hdlist1">ENDURANCE tests </dt><dd><p>for how long can we run within our anticipated range?</p></dd></dl></div></section><section id="_tools_3"><h2>Tools?</h2><div class="olist arabic"><ol class="arabic"><li><p>stress</p></li><li><p>Gatling</p></li></ol></div></section><section id="_stress"><h2>Stress</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="bash language-bash">$ sudo apt-get install stress
 $ man stress
 $ htop
-$ stress --cpu 4 --io 3 --hdd 3 --vm 2 --vm-bytes 128M</code></pre></div></div></section><section id="_gatling"><h2>Gatling</h2></section></section>
-<section><section id="_extra"><h2>Extra</h2><div class="paragraph"><p>Alias "everything else" :-)</p></div></section><section id="_wiremock"><h2>WireMock</h2><div class="paragraph"><p>WS test double</p></div></section><section id="_awaitability"><h2>Awaitability</h2><div class="paragraph"><p>Asynchronouse tests?</p></div></section><section id="_bibliography_links"><h2>Bibliography / Links</h2><div class="paragraph"><p><a href="http://www.lafk.pl/" class="bare">http://www.lafk.pl/</a></p></div>
+$ stress --cpu 4 --io 3 --hdd 3 --vm 2 --vm-bytes 128M</code></pre></div></div></section><section id="_gatling"><h2>Gatling</h2><div class="paragraph"><p><a href="https://github.com/gatling/gatling" class="bare">https://github.com/gatling/gatling</a></p></div></section></section>
+<section><section id="_extra"><h2>Extra</h2><div class="paragraph"><p>Alias "everything else" :-)</p></div></section><section id="_wiremock"><h2>WireMock</h2><div class="paragraph"><p>WS test double</p></div></section><section id="_awaitability"><h2>Awaitability</h2><div class="paragraph"><p>Asynchronous tests?</p></div>
+<div class="imageblock" style=""><div class="content"><img src="./img//Awaitility_logo_red_small.png" alt="Awaitility logo red small"></div></div></section><section id="_bibliography_links"><h2>Bibliography / Links</h2><div class="paragraph"><p><a href="http://www.lafk.pl/" class="bare">http://www.lafk.pl/</a></p></div>
 <div class="paragraph"><p>for further reading</p></div>
 <div class="paragraph"><p><a href="https://github.com/LIttleAncientForestKami/advanced-testing-Java-preso" class="bare">https://github.com/LIttleAncientForestKami/advanced-testing-Java-preso</a><br>
 <a href="https://github.com/junit-team/junit5" class="bare">https://github.com/junit-team/junit5</a><br>
