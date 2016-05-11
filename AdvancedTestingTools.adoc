@@ -498,6 +498,11 @@ Gauge, by ThoughtWorks
 https://github.com/getgauge/gauge-example-java
 http://getgauge.io/get-started/index.html
 
+[data-background="red"]
+=== Techniques?
+
+PRETOTYPING
+
 [data-background="green"]
 == Performant software?
 
@@ -542,7 +547,6 @@ image::databeneBeneratorUsage.png[]
 
 === Infinitest
 
-image::Infinitest-logo.png[]
 http://infinitest.github.io/
 
 === WireMock by Tom Akenhurst
