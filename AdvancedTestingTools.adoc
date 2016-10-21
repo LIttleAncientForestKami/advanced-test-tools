@@ -125,6 +125,7 @@ Or tweet me http://twitter.com/LAFK_pl[@LAFK_pl]
 === JUnit 4.11
 
 [source,java]
+.`@Parameterized` and `@Rule` and constructor
 ----
 @RunWith(Parameterized.class)
 public class AppParameterizedTest {
@@ -139,7 +140,13 @@ public class AppParameterizedTest {
         this.name = n;
         this.age = a;
     }
+----
 
+=== JUnit 4.11, cont.
+
+[source,java]
+.`@Parameterized`
+----
     @Parameterized.Parameters(name = "{index}: name: {0} age: {1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
@@ -150,7 +157,11 @@ public class AppParameterizedTest {
                 {"Miriamele", 19}  // hint perhaps?
         });
     }
+----
 
+=== JUnit 4.11 test that uses it
+[source,java]
+----
     @org.junit.Test
     public void verifyData1() {
         System.out.println(name + " " + age);
@@ -162,7 +173,13 @@ public class AppParameterizedTest {
         org.junit.Assert.assertNotNull("Name null for " + name + age, name);
         org.junit.Assert.assertNotNull("Age null for " + name + age, age);
     }
+----
 
+=== JUnit 4.11 soft assertions
+
+[source,java]
+.Remember `@Rule JUnitSoftAssertions ...`?
+----
     /**
      * @see <A HREF="http://joel-costigliola.github.io/assertj/assertj-core-features-highlight.html#soft-assertions">AssertJ SoftAssertions 4 JUnit</A>
      */
@@ -201,9 +218,6 @@ import com.googlecode.zohhak.api.TestWith;
 import com.googlecode.zohhak.api.runners.ZohhakRunner;
 import org.junit.runner.RunWith;
 
-/**
- * @author LAFK_pl, Tomasz.Borek@gmail.com
- */
 @RunWith(ZohhakRunner.class)
 public class AppZohhakTest {
 
@@ -217,7 +231,6 @@ public class AppZohhakTest {
         org.assertj.core.api.Assertions.assertThat(age).isGreaterThanOrEqualTo(18).as("adult in EU");
         org.assertj.core.api.Assertions.assertThat(age).isGreaterThanOrEqualTo(21).as("adult in US");
     }
-
 }
 ----
 
@@ -262,7 +275,11 @@ public class AppTheory {
                 new Person(null, 22)
         };
     }
+----
 
+=== Theories, not tests
+[source,java]
+----
     /**
      * In THEORY, name is 'of age' after 'name' reaches 18. Assuming 'name' shan't be null,
      *
@@ -293,6 +310,11 @@ public class AppTheory {
 . JUnit: constructor, static methods, strange reporting (until 4.7)
 . Remedied with Zohhak or JUnitParams (params via annotation)
 . JUnit Theory: strict, mathematical - seen property testing?
+
+=== Why TestNG?
+
+image::WhyTestNG_TomekKaczanowski.png[Title slide from Tomek's preso, link="http://kaczanowscy.pl/tomek/sites/default/files/testng_vs_junit.txt.slidy_.html"]
+click to follow to original
 
 [data-background="green"]
 == JUnit 5
@@ -548,7 +570,7 @@ $ stress --cpu 4 --io 3 --hdd 3 --vm 2 --vm-bytes 128M
 
 === Stressing the machine
 
-image::stress.gif[]
+image::stress.gif[Animated gif showing stress usage]
 
 === Gatling
 
