@@ -75,6 +75,7 @@ Or tweet me http://twitter.com/LAFK_pl[@LAFK_pl]
 === TestNG
 
 [source,java]
+.DataProvider
 ----
     // Provides data to any test method declaring Data Provider named "nameAndAge"
     @DataProvider(name = "nameAndAge")
@@ -87,6 +88,13 @@ Or tweet me http://twitter.com/LAFK_pl[@LAFK_pl]
                 {"Miriamele", 19}  // hint perhaps?
          };
     }
+----
+
+=== TestNG Tests
+
+[source,java]
+.Test that uses it
+----
 
     @Test(dataProvider = "nameAndAge")
     public void verifyData1(String name, Integer age) {
@@ -98,7 +106,12 @@ Or tweet me http://twitter.com/LAFK_pl[@LAFK_pl]
         Assert.assertNotNull(name, "Name null for " + name + age);
         Assert.assertNotNull(age, "Age null for " + name + age);
     }
+----
 
+=== Soft Assertions in TestNG
+
+[source,java]
+----
     @Test(dataProvider = "nameAndAge")
     public void verifyData1LastTime(String name, Integer age) {
         SoftAssert soft = new SoftAssert();
@@ -532,6 +545,10 @@ $ man stress
 $ htop
 $ stress --cpu 4 --io 3 --hdd 3 --vm 2 --vm-bytes 128M
 ----
+
+=== Stressing the machine
+
+image::stress.gif[]
 
 === Gatling
 
